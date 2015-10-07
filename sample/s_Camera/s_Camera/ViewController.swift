@@ -67,7 +67,8 @@ class ViewController:  UIViewController, UITableViewDataSource, UITableViewDeleg
         }
         
         if (sender.state == UIGestureRecognizerState.Began || sender.state == UIGestureRecognizerState.Changed) {
-            var newScale:CGFloat = 1 - (lastScale - sender.scale)
+//            var newScale:CGFloat = 1 - (lastScale - sender.scale)
+            let newScale = 1 - (lastScale - sender.scale)
             print("[1] sender:\(sender.scale) lastScale:\(lastScale) newScale:\(newScale)")
             self.imageView.transform = CGAffineTransformScale(self.imageView.transform, newScale, newScale)
             
@@ -76,7 +77,7 @@ class ViewController:  UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     @IBAction func doRotation(sender: UIBarButtonItem) {
-        let angle:CGFloat = CGFloat( M_PI / 180.0)
+//        let angle:CGFloat = CGFloat( M_PI / 180.0)
         self.imageView.transform = CGAffineTransformRotate(self.imageView.transform, CGFloat(M_PI / 2))
     }
 //    @IBAction func doRotation(sender: UIRotationGestureRecognizer) {
@@ -94,35 +95,36 @@ class ViewController:  UIViewController, UITableViewDataSource, UITableViewDeleg
     override func viewWillAppear(animated: Bool) {
 
         //辞書の配列
-        var jsonPathF = NSBundle.mainBundle().pathForResource("frame/5s/jsonFsize", ofType: "txt")
-        var jsonDataF = NSData(contentsOfFile: jsonPathF!)
-//        jsonFsize = NSJSONSerialization.JSONObjectWithData(jsonDataF!, options: nil, error: nil) as! NSArray
-//        jsonFsize = NSJSONSerialization.JSONObjectWithData(jsonDataF!, options : NSJSONReadingOptions.MutableContainers) as! NSArray
+//        var jsonPathF = NSBundle.mainBundle().pathForResource("frame/5s/jsonFsize", ofType: "txt")
+//        var jsonDataF = NSData(contentsOfFile: jsonPathF!)
+        let jsonPathF = NSBundle.mainBundle().pathForResource("frame/5s/jsonFsize", ofType: "txt")
+        let jsonDataF = NSData(contentsOfFile: jsonPathF!)
+        jsonFsize = try! NSJSONSerialization.JSONObjectWithData(jsonDataF!, options: NSJSONReadingOptions.MutableContainers) as! NSArray
+        
+        
+        
+        //-- debug --
+//        let txtNg = ""
+//        let txtOk = "{\"hoge\": {\"huga\":1, \"hige\":2}}"
+//        let data = txtNg.dataUsingEncoding(NSUTF8StringEncoding) as NSData!
+//        let data = txtOk.dataUsingEncoding(NSUTF8StringEncoding) as NSData!
+        
 
-        var jsonFsize = NSJSONSerialization.JSONObjectWithData(jsonDataF!, options: NSJSONReadingOptions.MutableContainers) as! NSArray
         
-        let txtNg = ""
-        let txtOk = "{\"hoge\": {\"huga\":1, \"hige\":2}}"
         
-        let data = txtNg.dataUsingEncoding(NSUTF8StringEncoding) as NSData!
-        //let data = txtOk.dataUsingEncoding(NSUTF8StringEncoding) as NSData!
         
+        
+        let jsonPathP = NSBundle.mainBundle().pathForResource("frame/5s/jsonPsize", ofType: "txt")
+        let jsonDataP = NSData(contentsOfFile: jsonPathP!)
+        jsonPsize = try! NSJSONSerialization.JSONObjectWithData(jsonDataP!, options: NSJSONReadingOptions.MutableContainers) as! NSArray
+ 
+        let jsonPathM = NSBundle.mainBundle().pathForResource("frame/5s/jsonMsize", ofType: "txt")
+        let jsonDataM = NSData(contentsOfFile: jsonPathM!)
+        jsonMsize = try! NSJSONSerialization.JSONObjectWithData(jsonDataM!, options: NSJSONReadingOptions.MutableContainers) as! NSArray
 
-        
-        
-        
-        
-        var jsonPathP = NSBundle.mainBundle().pathForResource("frame/5s/jsonPsize", ofType: "txt")
-        var jsonDataP = NSData(contentsOfFile: jsonPathP!)
-        jsonPsize = NSJSONSerialization.JSONObjectWithData(jsonDataP!, options: nil, error: nil) as! NSArray
-
-        var jsonPathM = NSBundle.mainBundle().pathForResource("frame/5s/jsonMsize", ofType: "txt")
-        var jsonDataM = NSData(contentsOfFile: jsonPathM!)
-        jsonMsize = NSJSONSerialization.JSONObjectWithData(jsonDataM!, options: nil, error: nil) as! NSArray
-
-        var jsonPathO = NSBundle.mainBundle().pathForResource("frame/5s/jsonOther", ofType: "txt")
-        var jsonDataO = NSData(contentsOfFile: jsonPathO!)
-        jsonOther = NSJSONSerialization.JSONObjectWithData(jsonDataO!, options: nil, error: nil) as! NSArray
+        let jsonPathO = NSBundle.mainBundle().pathForResource("frame/5s/jsonOther", ofType: "txt")
+        let jsonDataO = NSData(contentsOfFile: jsonPathO!)
+        jsonOther = try! NSJSONSerialization.JSONObjectWithData(jsonDataO!, options: NSJSONReadingOptions.MutableContainers) as! NSArray
         
     }
     
@@ -152,7 +154,7 @@ class ViewController:  UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     // 写真を選択した時に呼ばれる
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [NSObject : AnyObject]) {
+    func imagePickerController(picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : AnyObject]) {
         if info[UIImagePickerControllerOriginalImage] != nil {
             let image = info[UIImagePickerControllerOriginalImage] as! UIImage
             print(image)
@@ -199,7 +201,7 @@ class ViewController:  UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "myCell")
+        let cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "myCell")
 
         var gosu:String
         var desuSize:String
@@ -337,7 +339,8 @@ class ViewController:  UIViewController, UITableViewDataSource, UITableViewDeleg
     /*
     指が離れたことを感知した際に呼ばれるメソッド.
     */
-    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+//    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
         
         //       println("sc:\(self.scale) tE:\(self.viewImage.frame)")
         
